@@ -12,6 +12,8 @@ import app.edlc.taskapi.user.data.User;
 import app.edlc.taskapi.user.data.UserRequestDto;
 import app.edlc.taskapi.user.data.UserResponseDto;
 import app.edlc.taskapi.user.data.mapper.UserMapper;
+import app.edlc.taskapi.user.exception.UserNotFoundException;
+import app.edlc.taskapi.user.exception.UsernameAlreadyExistsException;
 
 @Service
 public class UserService {	
@@ -27,14 +29,17 @@ public class UserService {
 	private PermissionRepository permissionRepository;
 	
 	public UserResponseDto create(UserRequestDto userRequest) {
-		logger.info("Creating new user");
+		logger.info("Creating new user");		
+		
+		if(userRepository.existsByUsername(userRequest.getUsername()))
+			throw new UsernameAlreadyExistsException();		
 		
 		userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 		User userEntity = mapper.toEntity(userRequest);
 		
 		// set permission
 		Permission userPermission = permissionRepository.findById(Constants.ID_COMMON_USER_ROLE)
-				.orElseThrow(() -> new RuntimeException("Could not find permission."));		
+				.orElseThrow(() -> new UserNotFoundException());		
 		userEntity.getPermissions().add(userPermission);
 		
 		UserResponseDto responseDto = mapper.toResponseDto(userRepository.save(userEntity));		
@@ -45,7 +50,7 @@ public class UserService {
 		logger.info("Deleting user");
 		
 		User user = userRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Could not find user with this id."));
+				.orElseThrow(() -> new UserNotFoundException());
 		
 		userRepository.delete(user);
 	}
