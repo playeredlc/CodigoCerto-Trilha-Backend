@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import app.edlc.taskapi.security.exception.InvalidJwtAuthenticationException;
 import app.edlc.taskapi.user.exception.UserNotFoundException;
 import app.edlc.taskapi.user.exception.UsernameAlreadyExistsException;
 
 /*
- *	Handler to generic (500) exceptions 
+ *	Global Exception Handler
  */
 
 @ControllerAdvice
@@ -49,5 +50,14 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 				request.getDescription(false));
 		
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);		
+	}
+	
+	@ExceptionHandler(InvalidJwtAuthenticationException.class)
+	public final ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationException(Exception e, WebRequest request) {
+		ExceptionResponse exceptionResponse = new ExceptionResponse(
+				new Date(),
+				e.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
 	}
 }
