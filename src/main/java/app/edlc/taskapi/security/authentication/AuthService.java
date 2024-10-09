@@ -31,17 +31,29 @@ public class AuthService {
 							credentials.getUsername(),
 							credentials.getPassword())
 			);			
-			TokenDto tokenResponse = new TokenDto();			
+			TokenDto responseToken = new TokenDto();			
 			if(userRepository.existsByUsername(credentials.getUsername())) {
 				User user = userRepository.findByUsername(credentials.getUsername());
-				tokenResponse = tokenProvider.createAccessToken(user.getUsername(), user.getRoles());
+				responseToken = tokenProvider.createAccessToken(user.getUsername(), user.getRoles());
 			} else {
 				throw new UsernameNotFoundException(credentials.getUsername() + " username does not exist.");
 			}			
-			return ResponseEntity.ok(tokenResponse);
+			return ResponseEntity.ok(responseToken);
 			
 		} catch (Exception e) {
 			throw new BadCredentialsException("Invalid username or password.");
 		}
+	}
+	
+	public ResponseEntity<TokenDto> refreshToken(String username, String refreshToken) {
+		TokenDto responseToken = new TokenDto();
+		
+		if (userRepository.existsByUsername(username)) {
+			responseToken = tokenProvider.refreshToken(refreshToken);
+		} else {
+			throw new UsernameNotFoundException(username + " username does not exist.");
+		}
+		
+		return ResponseEntity.ok(responseToken);
 	}
 }
