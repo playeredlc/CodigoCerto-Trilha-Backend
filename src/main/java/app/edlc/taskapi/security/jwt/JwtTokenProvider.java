@@ -5,8 +5,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -16,6 +20,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import app.edlc.taskapi.security.data.TokenDto;
 import app.edlc.taskapi.security.exception.InvalidJwtAuthenticationException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtTokenProvider {
@@ -40,6 +45,15 @@ public class JwtTokenProvider {
 		algorithm = Algorithm.HMAC256(secretKey.getBytes());
 	}
 	
+	public Authentication getAuthentication(String token) {
+		DecodedJWT decodedJWT = validateAndDecodeToken(token);
+		UserDetails userDetails = userDetailsService
+				.loadUserByUsername(decodedJWT.getSubject());
+		
+		return new UsernamePasswordAuthenticationToken(decodedJWT, "", userDetails.getAuthorities());
+	}
+	
+	// create TokenDto which will have the actual access and refresh tokens as attributes
 	public TokenDto createAccessToken(String username, List<String> roles) {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -50,6 +64,7 @@ public class JwtTokenProvider {
 		return new TokenDto(username, true, now, validity, accessToken, refreshToken);
 	}
 	
+	// create a new TokenDTO given a valid refresh token
 	public TokenDto refreshToken(String refreshToken) {
 		if (refreshToken != null && refreshToken.startsWith("Bearer "))
 			refreshToken = refreshToken.substring("Bearer ".length());
@@ -61,6 +76,56 @@ public class JwtTokenProvider {
 				decodedRefresh.getClaim("roles").asList(String.class));		
 	}
 	
+	public String resolveToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader("Authorization");
+		
+		if(bearerToken != null && bearerToken.startsWith("Bearer "))
+			return bearerToken.substring("Bearer ".length());
+		
+		return null;
+	}
+	
+	public boolean isTokenValid(String token) {		
+		try {
+			DecodedJWT decodedJWT = validateAndDecodeToken(token);			
+			if (decodedJWT.getExpiresAt().before(new Date()))
+				return false;			
+		} catch (Exception e) {
+			throw new InvalidJwtAuthenticationException();
+		}		
+		return true;	
+	}
+	
+	// Generate the actual AccessToken which is an attribute of TokenDto
+	private String generateToken(String username, List<String> roles, Date now, Date validity) {
+		String issuerUrl = ServletUriComponentsBuilder
+				.fromCurrentContextPath()
+				.build()
+				.toUriString();
+		
+		return JWT.create()
+				.withClaim("roles", roles)
+				.withIssuedAt(now)
+				.withExpiresAt(validity)
+				.withSubject(username)
+				.withIssuer(issuerUrl)
+				.sign(algorithm)
+				.strip();
+	}
+	
+	// Generate the actual RefreshToken which is an attribute of TokenDto
+	private String generateRefreshToken(String username, List<String> roles, Date now) {
+		Date validityRefreshToken = new Date((now.getTime() + validityInMilliseconds) * refreshFactor);
+		
+		return JWT.create()
+				.withClaim("roles", roles)
+				.withIssuedAt(now)
+				.withExpiresAt(validityRefreshToken)
+				.withSubject(username)
+				.sign(algorithm)
+				.strip();
+	}
+	
 	private DecodedJWT validateAndDecodeToken(String refreshToken) {
 		JWTVerifier verifier = JWT.require(algorithm).build();
 		try {
@@ -68,15 +133,5 @@ public class JwtTokenProvider {
 		} catch (Exception e) {
 			throw new InvalidJwtAuthenticationException();
 		}
-	}
-	
-	private String generateToken(String username, List<String> roles, Date now, Date validity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private String generateRefreshToken(String username, List<String> roles, Date now) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
