@@ -1,5 +1,7 @@
 package app.edlc.taskapi.user.unittests.mocks;
 
+import java.util.ArrayList;
+
 import app.edlc.taskapi.user.data.User;
 import app.edlc.taskapi.user.data.UserRequestDto;
 import app.edlc.taskapi.user.data.UserResponseDto;
@@ -29,6 +31,7 @@ public class MockUser {
 		entity.setAccount_non_locked(true);
 		entity.setCredentials_non_expired(true);
 		entity.setEnabled(true);
+		entity.setPermissions(new ArrayList<>());
 		
 		return entity;
 	}
