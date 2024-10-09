@@ -3,19 +3,18 @@ package app.edlc.taskapi.user.data;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class UserDto implements Serializable {
+public class UserResponseDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private Long id;
 	private String name;
 	private String username;
-	private String password;
 	
-	public UserDto() {}
+	public UserResponseDto() {}
 	
 	// Getters, Setters, Equals and HashCode
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -40,17 +39,9 @@ public class UserDto implements Serializable {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, password, username);
+		return Objects.hash(id, name, username);
 	}
 
 	@Override
@@ -61,8 +52,8 @@ public class UserDto implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserDto other = (UserDto) obj;
+		UserResponseDto other = (UserResponseDto) obj;
 		return Objects.equals(id, other.id) && Objects.equals(name, other.name)
-				&& Objects.equals(password, other.password) && Objects.equals(username, other.username);
-	}
+				&& Objects.equals(username, other.username);
+	}	
 }
