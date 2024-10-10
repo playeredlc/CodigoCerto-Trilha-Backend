@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,5 +70,14 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 				e.getMessage(),
 				request.getDescription(false));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
-	}	
+	}
+	
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public final ResponseEntity<ExceptionResponse> handleUsernameNotFoundException(Exception e, WebRequest request) {
+		ExceptionResponse exceptionResponse = new ExceptionResponse(
+				new Date(),
+				e.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+	}
 }
