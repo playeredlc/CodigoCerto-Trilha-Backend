@@ -14,14 +14,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import app.edlc.taskapi.security.jwt.JwtTokenFilter;
-import app.edlc.taskapi.security.jwt.JwtTokenProvider;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {	
 	
 	@Autowired
-	private JwtTokenProvider tokenProvider;
+	private JwtTokenFilter customFilter;
 	
 	@Bean
 	PasswordEncoder passwordEncoder() {
@@ -35,25 +34,22 @@ public class SecurityConfig {
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
-		JwtTokenFilter customFilter = new JwtTokenFilter(tokenProvider);
-		
 		return http
-				.httpBasic(httpBasic -> httpBasic.disable())
-				.csrf(csrf -> csrf.disable())
-				.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
-					.sessionManagement(session ->
-						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-					.authorizeHttpRequests(auth ->
-						auth
-							.requestMatchers(
-									"/user",
-									"/auth/login",
-									"/auth/refresh/**",
-									"/swagger-ui",
-									"/v3/api-docs/**").permitAll()
-							.requestMatchers("/api/**").authenticated())
-				.cors(cors -> {})
-				.build();
+			.httpBasic(httpBasic -> httpBasic.disable())
+			.csrf(csrf -> csrf.disable())
+			.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
+				.sessionManagement(session ->
+					session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth ->
+					auth
+						.requestMatchers(
+								"/user",
+								"/auth/login",
+								"/auth/refresh/**",
+								"/swagger-ui",
+								"/v3/api-docs/**").permitAll()
+						.requestMatchers("/api/**").authenticated())
+			.cors(cors -> {})
+			.build();
 	}
 }
