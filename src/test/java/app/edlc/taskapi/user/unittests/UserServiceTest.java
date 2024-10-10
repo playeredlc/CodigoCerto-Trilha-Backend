@@ -59,7 +59,6 @@ public class UserServiceTest {
 	@Test
     public void create_ShouldReturnUserResponseDto_WhenUserIsCreated() {
         when(userRepository.existsByUsername(userRequestDto.getUsername())).thenReturn(false);
-        when(passwordEncoder.encode(userRequestDto.getPassword())).thenReturn("encodedPassword");
         when(mapper.toEntity(userRequestDto)).thenReturn(userEntity);
         when(permissionRepository.findById(Constants.ID_COMMON_USER_ROLE)).thenReturn(Optional.of(new Permission()));
         when(userRepository.save(userEntity)).thenReturn(userEntity);

@@ -1,0 +1,20 @@
+server:
+  port: 8888
+cors:
+  originPatterns: http://localhost:8888
+spring:
+  datasource:
+    url: jdbc:sqlite:src/test/resources/test-db.db
+    driver-class-name: org.sqlite.JDBC
+    username: db_user_test
+    password: db_password_test
+  flyway:
+    enabled: true
+    locations:
+    - classpath:db/migration
+    - classpath:test/db/migration
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
