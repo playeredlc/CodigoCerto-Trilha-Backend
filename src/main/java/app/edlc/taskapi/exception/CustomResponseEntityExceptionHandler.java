@@ -13,6 +13,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import app.edlc.taskapi.security.exception.InvalidJwtAuthenticationException;
+import app.edlc.taskapi.task.exception.RequiredObjectIsNullException;
+import app.edlc.taskapi.task.exception.ResourceNotFoundException;
 import app.edlc.taskapi.user.exception.UserNotFoundException;
 import app.edlc.taskapi.user.exception.UsernameAlreadyExistsException;
 
@@ -79,5 +81,23 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 				e.getMessage(),
 				request.getDescription(false));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(RequiredObjectIsNullException.class)
+	public final ResponseEntity<ExceptionResponse> handleRequiredObjectIsNullException(Exception e, WebRequest request) {
+		ExceptionResponse exceptionResponse = new ExceptionResponse(
+				new Date(),
+				e.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public final ResponseEntity<ExceptionResponse> handleResourceNotFoundException(Exception e, WebRequest request) {
+		ExceptionResponse exceptionResponse = new ExceptionResponse(
+				new Date(),
+				e.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 	}
 }
