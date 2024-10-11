@@ -126,12 +126,19 @@ public class JwtTokenProvider {
 				.strip();
 	}
 	
-	private DecodedJWT validateAndDecodeToken(String refreshToken) {
+	private DecodedJWT validateAndDecodeToken(String token) {
 		JWTVerifier verifier = JWT.require(algorithm).build();
 		try {
-			return verifier.verify(refreshToken);
+			return verifier.verify(token);
 		} catch (Exception e) {
 			throw new InvalidJwtAuthenticationException();
 		}
+	}
+	
+	public String extractSubject(String token) {
+		if(token != null && token.startsWith("Bearer "))
+			token = token.substring("Bearer ".length());
+		
+		return validateAndDecodeToken(token).getSubject();		
 	}
 }
