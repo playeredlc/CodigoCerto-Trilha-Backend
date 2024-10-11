@@ -80,10 +80,28 @@ public class TaskService {
 	}
 	
 	public ResponseEntity<TaskDto> update(TaskDto task, String username) {
+		if (task == null) throw new RequiredObjectIsNullException();
 		
-		// TODO
+		Task taskEntity = taskRepository.findById(task.getKey())
+				.orElseThrow(() -> new ResourceNotFoundException());
 		
-		return null;
+		if (!taskEntity.getUser().getUsername().equals(username))
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		
+		Task requestAsEntity = mapper.toEntity(task);
+		
+		taskEntity.setTitle(requestAsEntity.getTitle());
+		taskEntity.setDescription(requestAsEntity.getDescription());
+		taskEntity.setPriority(requestAsEntity.getPriority());
+		taskEntity.setStatus(requestAsEntity.getStatus());
+		taskEntity.setDeadline(requestAsEntity.getDeadline());
+		
+		TaskDto updatedDto = mapper.toDto(taskRepository.save(taskEntity));
+		
+		updatedDto.add(linkTo(
+				methodOn(TaskController.class).findById(updatedDto.getKey(), username)).withSelfRel());
+		
+		return ResponseEntity.ok(updatedDto);
 	}
 	
 	public ResponseEntity<?> delete(Long id) {
