@@ -15,6 +15,7 @@ import app.edlc.taskapi.task.data.Task;
 import app.edlc.taskapi.task.data.TaskDto;
 import app.edlc.taskapi.task.data.mapper.TaskMapper;
 import app.edlc.taskapi.task.exception.RequiredObjectIsNullException;
+import app.edlc.taskapi.task.exception.ResourceNotFoundException;
 import app.edlc.taskapi.user.UserRepository;
 import app.edlc.taskapi.user.data.User;
 
@@ -30,7 +31,7 @@ public class TaskService {
 	
 	public ResponseEntity<TaskDto> findById(Long id, String username) {
 		Task taskEntity = taskRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException());
+				.orElseThrow(() -> new ResourceNotFoundException());
 		
 		
 		if (!taskEntity.getUser().getUsername().equals(username))
