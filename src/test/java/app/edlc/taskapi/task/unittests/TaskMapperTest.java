@@ -50,6 +50,32 @@ public class TaskMapperTest {
     }
 	
 	@Test
+	public void shouldSetDefaultWhenInvalidAttributes() {
+		TaskDto dto = mockTask.mockDto();
+		dto.setStatus("INVALID_STATUS");
+		dto.setPriority("INVALID_PRIORITY");
+		
+		Task entity = taskMapper.toEntity(dto);
+		assertAll("Task with invalid attributes",
+			() -> assertEquals(Status.PENDING, entity.getStatus()),
+			() -> assertEquals(Status.PENDING, entity.getStatus())
+		);
+	}
+	
+	@Test
+	public void shouldSetDefaultWhenNullAttributes() {
+		TaskDto dto = mockTask.mockDto();
+		dto.setStatus(null);
+		dto.setPriority(null);
+		
+		Task entity = taskMapper.toEntity(dto);
+		assertAll("Task with invalid attributes",
+			() -> assertEquals(Status.PENDING, entity.getStatus()),
+			() -> assertEquals(Status.PENDING, entity.getStatus())
+		);	
+	}
+	
+	@Test
     public void shouldConvertEntityToDto() {
         Task entity = mockTask.mockEntity();        
         TaskDto dto = taskMapper.toDto(entity);
