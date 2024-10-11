@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class TaskDto implements Serializable {
+import org.springframework.hateoas.RepresentationModel;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+public class TaskDto extends RepresentationModel<TaskDto> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -13,6 +17,7 @@ public class TaskDto implements Serializable {
 	private String description;
 	private String priority;
 	private String status;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Date deadline;
 	
 	public TaskDto() {}
