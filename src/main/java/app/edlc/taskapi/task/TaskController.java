@@ -48,9 +48,7 @@ public class TaskController {
 			@RequestHeader(name = "Authorization") String accessToken) {		
 		String username = tokenProvider.extractSubject(accessToken);
 		
-		// TODO
-		
-		return null;
+		return service.create(task, username);
 	}
 	
 	@PutMapping

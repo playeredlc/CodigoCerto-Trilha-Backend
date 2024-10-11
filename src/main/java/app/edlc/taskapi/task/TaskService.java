@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import app.edlc.taskapi.task.data.Task;
 import app.edlc.taskapi.task.data.TaskDto;
 import app.edlc.taskapi.task.data.mapper.TaskMapper;
+import app.edlc.taskapi.task.exception.RequiredObjectIsNullException;
 import app.edlc.taskapi.user.UserRepository;
 import app.edlc.taskapi.user.data.User;
 
@@ -58,10 +59,23 @@ public class TaskService {
 	}	
 	
 	public ResponseEntity<TaskDto> create(TaskDto task, String username) {		
+		if (task == null) throw new RequiredObjectIsNullException();
 		
-		// TODO
+		User taskOwner;
+		if (userRepository.existsByUsername(username))
+			taskOwner = userRepository.findByUsername(username);
+		else
+			throw new UsernameNotFoundException("User with " + username + " username not found.");
 		
-		return null;
+		Task taskEntity = mapper.toEntity(task);
+		taskEntity.setUser(taskOwner);
+		
+		TaskDto createdDto = mapper.toDto(taskRepository.save(taskEntity));
+		
+		createdDto.add(linkTo(
+				methodOn(TaskController.class).findById(createdDto.getKey(), username)).withSelfRel());
+		
+		return ResponseEntity.ok(createdDto);
 	}
 	
 	public ResponseEntity<TaskDto> update(TaskDto task, String username) {
