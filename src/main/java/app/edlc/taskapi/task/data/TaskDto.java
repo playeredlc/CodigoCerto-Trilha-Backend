@@ -7,11 +7,15 @@ import java.util.Objects;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "id", "title", "description", "priority", "sdtatus", "deadline" })
 public class TaskDto extends RepresentationModel<TaskDto> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	@JsonProperty("id")
 	private Long key;
 	private String title;
 	private String description;
