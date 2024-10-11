@@ -39,9 +39,7 @@ public class TaskController {
 	public ResponseEntity<List<TaskDto>> findAll(@RequestHeader(name = "Authorization") String accessToken) {
 		String username = tokenProvider.extractSubject(accessToken);
 		
-		// TODO
-		
-		return null;
+		return service.findAll(username);		
 	}
 	
 	@PostMapping

@@ -8,12 +8,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import app.edlc.taskapi.task.data.Task;
 import app.edlc.taskapi.task.data.TaskDto;
 import app.edlc.taskapi.task.data.mapper.TaskMapper;
 import app.edlc.taskapi.user.UserRepository;
+import app.edlc.taskapi.user.data.User;
 
 @Service
 public class TaskService {
@@ -41,12 +43,19 @@ public class TaskService {
 	}
 	
 	public ResponseEntity<List<TaskDto>> findAll(String username) {
+		User taskOwner;
+		if (userRepository.existsByUsername(username))
+			taskOwner = userRepository.findByUsername(username);
+		else
+			throw new UsernameNotFoundException("User with " + username + " username not found.");
 		
-		// TODO
+		List<TaskDto> dtoList = mapper.toDtoList(taskRepository.findByUser(taskOwner));
+		for (TaskDto d : dtoList)
+			d.add(linkTo(
+				methodOn(TaskController.class).findById(d.getKey(), username)).withSelfRel());
 		
-		return null;
-	}
-	
+		return ResponseEntity.ok(dtoList);
+	}	
 	
 	public ResponseEntity<TaskDto> create(TaskDto task, String username) {		
 		
