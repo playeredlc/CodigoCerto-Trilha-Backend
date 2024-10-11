@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import app.edlc.taskapi.task.data.Task;
 import app.edlc.taskapi.task.data.TaskDto;
 import app.edlc.taskapi.task.data.enums.Priority;
 import app.edlc.taskapi.task.data.enums.Status;
 
+@Component
 public class TaskMapper {
 	private final ModelMapper modelMapper;
 	
@@ -39,10 +41,8 @@ public class TaskMapper {
 	public Task toEntity(TaskDto dto) {		
 		Task entity = modelMapper.map(dto, Task.class);
 		
-		if (validatePriority(dto.getPriority()) == null)
-			entity.setPriority(Priority.LOW);
-		if (validateStatus(dto.getStatus()) == null)
-			entity.setStatus(Status.PENDING);
+		entity.setPriority(validatePriority(dto.getPriority()));
+		entity.setStatus(validateStatus(dto.getStatus()));		
 		
 		return entity;
 	}
@@ -69,17 +69,23 @@ public class TaskMapper {
 	
 	private Status validateStatus(String statusStr) {
 		try {
+			if (statusStr == null)
+				return Status.PENDING;
+			
             return Status.valueOf(statusStr.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return null; // Invalid status
+            return Status.PENDING;
         }
 	}
 	
 	private Priority validatePriority(String priorityStr) {
 		try {
-			return Priority.valueOf(priorityStr);
+			if (priorityStr == null)
+				return Priority.LOW;
+			
+			return Priority.valueOf(priorityStr.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return null;
+			return Priority.LOW;
 		}
 	}
 }
