@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS task (
     priority TEXT NOT NULL CHECK(priority IN ('low', 'medium', 'high')) DEFAULT 'low',
     status TEXT NOT NULL CHECK(status IN ('pending', 'completed')) DEFAULT 'pending',
     deadline DATETIME,
-    user_id INTEGER,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    id_user INTEGER,
+    FOREIGN KEY (id_user) REFERENCES user(id) ON DELETE CASCADE
 );
