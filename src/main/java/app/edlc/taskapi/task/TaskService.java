@@ -104,9 +104,15 @@ public class TaskService {
 		return ResponseEntity.ok(updatedDto);
 	}
 	
-	public ResponseEntity<?> delete(Long id) {
+	public ResponseEntity<?> delete(Long id, String username) {
+		Task taskEntity = taskRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException());
 		
-		// TODO
-		return null;
+		if (!taskEntity.getUser().getUsername().equals(username))
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		
+		taskRepository.delete(taskEntity);
+		
+		return ResponseEntity.noContent().build();
 	}
 }
