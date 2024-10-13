@@ -98,7 +98,7 @@ public class TaskController {
     
     @Test
     @Order(1)
-    public void shouldSuccessfullyCreateTask() throws Exception {
+    public void create_ValidTaskDto_ReturnsCreatedTaskDto() throws Exception {
     	MockDtoUtil.mockTaskAttributes(task);
     	
     	var response = given()
@@ -131,7 +131,7 @@ public class TaskController {
     
     @Test
     @Order(2)
-    public void shouldSuccessfullyFindAllTasks() throws JsonMappingException, JsonProcessingException {
+    public void findAll_ValidUsername_ReturnsListOfTaskDtos() throws JsonMappingException, JsonProcessingException {
     	var response = given()
     			.spec(specification)
     			.when()
@@ -155,7 +155,7 @@ public class TaskController {
     
     @Test
     @Order(3)
-    public void shouldSuccessfullyFindTaskById() throws Exception {    	
+    public void findById_ValidId_ReturnsTaskDto() throws Exception {    	
     	MockDtoUtil.mockTaskAttributes(task);
     	
     	var response = given()
@@ -186,7 +186,7 @@ public class TaskController {
     
     @Test
     @Order(4)
-    public void shouldUpdateTaskSuccessfully() throws JsonMappingException, JsonProcessingException {
+    public void update_ValidTaskDto_ReturnsUpdatedTaskDto() throws JsonMappingException, JsonProcessingException {
     	MockDtoUtil.updateTaskAttributes(task);
     	
     	var response = given()
@@ -217,7 +217,7 @@ public class TaskController {
     
     @Test
     @Order(5)
-    public void shouldDeleteTaskSuccessfully() {
+    public void delete_ValidId_ReturnsNoContent() {
     	given()
     		.spec(specification)
     		.pathParam("id", task.getId())
