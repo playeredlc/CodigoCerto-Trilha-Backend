@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,7 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import app.edlc.taskapi.authentication.integrationtests.dto.AccountCredentialsDto;
@@ -119,6 +124,106 @@ public class TaskController {
     		() -> assertEquals("MEDIUM", responseDto.getPriority()),
     		() -> assertEquals("PENDING", responseDto.getStatus()),
     		() -> assertEquals(task.getDeadline(), responseDto.getDeadline())
+    	);
+    	
+    	task = responseDto;
+    }
+    
+    @Test
+    @Order(2)
+    public void shouldSuccessfullyFindAllTasks() throws JsonMappingException, JsonProcessingException {
+    	var response = given()
+    			.spec(specification)
+    			.when()
+    				.get()
+    			.then()
+    				.statusCode(200)
+    			.extract()
+    				.body()
+    					.asString();
+    	
+    	assertNotNull(response);
+    	List<TaskDto> taskList = objectMapper.readValue(response, new TypeReference<List<TaskDto>>(){});
+    	
+    	assertNotNull(taskList);
+    	taskList.stream()
+    		.forEach(t -> {
+    			assertNotNull(t);
+    			assertTrue(t.getId() > 0);
+    	});    	
+    }
+    
+    @Test
+    @Order(3)
+    public void shouldSuccessfullyFindTaskById() throws Exception {    	
+    	MockDtoUtil.mockTaskAttributes(task);
+    	
+    	var response = given()
+    			.spec(specification)
+    			.pathParam("id", task.getId())
+    			.when()
+    				.get("{id}")
+    			.then()
+    				.statusCode(200)
+    			.extract()
+    				.body()
+    					.asString();
+    	
+    	assertNotNull(response);
+    	TaskDto responseDto = objectMapper.readValue(response, TaskDto.class);    	
+    	
+    	assertAll("Task Find by ID",
+    		() -> assertNotNull(responseDto),
+    		() -> assertNotNull(responseDto.getId()),
+    		() -> assertEquals(task.getId(), responseDto.getId()),
+    		() -> assertEquals(task.getTitle(), responseDto.getTitle()),
+    		() -> assertEquals(task.getDescription(), responseDto.getDescription()),
+    		() -> assertEquals("MEDIUM", responseDto.getPriority()),
+    		() -> assertEquals("PENDING", responseDto.getStatus()),
+    		() -> assertEquals(task.getDeadline(), responseDto.getDeadline())
     	);    	
+    }
+    
+    @Test
+    @Order(4)
+    public void shouldUpdateTaskSuccessfully() throws JsonMappingException, JsonProcessingException {
+    	MockDtoUtil.updateTaskAttributes(task);
+    	
+    	var response = given()
+    			.spec(specification)
+    			.body(task)
+    			.when()
+    				.put()
+    			.then()
+    				.statusCode(200)
+    			.extract()
+    				.body()
+    					.asString();
+    	
+    	assertNotNull(response);
+    	TaskDto responseDto = objectMapper.readValue(response, TaskDto.class);
+    	
+    	assertAll("Task Update",
+        		() -> assertNotNull(responseDto),
+        		() -> assertNotNull(responseDto.getId()),
+        		() -> assertEquals(task.getId(), responseDto.getId()),
+        		() -> assertEquals("Updated Title Test", responseDto.getTitle()),
+        		() -> assertEquals("Updated Description Test", responseDto.getDescription()),
+        		() -> assertEquals("HIGH", responseDto.getPriority()),
+        		() -> assertEquals("COMPLETED", responseDto.getStatus()),
+        		() -> assertNull(responseDto.getDeadline())
+        	);
+    }
+    
+    @Test
+    @Order(5)
+    public void shouldDeleteTaskSuccessfully() {
+    	given()
+    		.spec(specification)
+    		.pathParam("id", task.getId())
+    		.when()
+    			.delete("{id}")
+    		.then()
+    			.statusCode(204);    	
     }
 }

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-import app.edlc.taskapi.user.integrationtests.data.User;
 
 public class Task implements Serializable{
 	
@@ -15,7 +14,6 @@ public class Task implements Serializable{
 	private String description;
 	private Status status;
 	private Date dealine;
-	private User user;
 	
 	public Task() {}
 	
@@ -63,7 +61,7 @@ public class Task implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dealine, description, id, status, title, user);
+		return Objects.hash(dealine, description, id, status, title);
 	}
 
 	@Override
@@ -76,7 +74,6 @@ public class Task implements Serializable{
 			return false;
 		Task other = (Task) obj;
 		return Objects.equals(dealine, other.dealine) && Objects.equals(description, other.description)
-				&& Objects.equals(id, other.id) && status == other.status && Objects.equals(title, other.title)
-				&& Objects.equals(user, other.user);
+				&& Objects.equals(id, other.id) && status == other.status && Objects.equals(title, other.title);
 	}
 }
