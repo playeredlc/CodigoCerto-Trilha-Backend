@@ -15,7 +15,7 @@ public class TaskDto extends RepresentationModel<TaskDto> implements Serializabl
 
 	private static final long serialVersionUID = 1L;
 	
-	@JsonProperty("id")
+	@JsonProperty(value = "id")
 	private Long key;
 	private String title;
 	private String description;
