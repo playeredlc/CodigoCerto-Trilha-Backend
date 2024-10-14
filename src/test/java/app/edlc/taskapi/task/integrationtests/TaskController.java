@@ -44,6 +44,7 @@ public class TaskController {
 	
 	private static ObjectMapper objectMapper;
 	private static RequestSpecification specification;
+	private static RequestSpecification specWithoutPermission;
 	private static TaskDto task;
 	
 	@BeforeAll
@@ -52,6 +53,15 @@ public class TaskController {
 				.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		
 		specification = new RequestSpecBuilder()
+				.setPort(TestConfig.SERVER_PORT)
+				.setBasePath("/api/task/v1")
+				.setContentType(TestConfig.CONTENT_TYPE_JSON)
+				.setAccept(TestConfig.CONTENT_TYPE_JSON)
+				.addFilter(new RequestLoggingFilter(LogDetail.ALL))
+				.addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+				.build();
+		
+		specWithoutPermission = new RequestSpecBuilder()
 				.setPort(TestConfig.SERVER_PORT)
 				.setBasePath("/api/task/v1")
 				.setContentType(TestConfig.CONTENT_TYPE_JSON)
@@ -93,7 +103,28 @@ public class TaskController {
     				.getAccessToken();
     	
     	assertNotNull(accessToken);
-    	specification.header(TestConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken);		
+    	specification.header(TestConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken);
+    	
+    	// Set specWithoutPermission accessToken
+    	credentials.setUsername("second_tester_username");
+    	credentials.setPassword("tester123");
+    	accessToken = given()
+    			.port(TestConfig.SERVER_PORT)
+				.contentType(TestConfig.CONTENT_TYPE_JSON)
+				.accept(TestConfig.CONTENT_TYPE_JSON)    			
+    			.basePath("/auth/login")
+    			.body(credentials)
+    			.when()
+    				.post()
+    			.then()
+    				.statusCode(200)
+    			.extract()
+    				.body()
+    					.as(TokenDto.class)
+    				.getAccessToken();
+    	
+    	assertNotNull(accessToken);
+    	specWithoutPermission.header(TestConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken);    
     }
     
     @Test
@@ -186,6 +217,40 @@ public class TaskController {
     
     @Test
     @Order(4)
+    public void findById_UserDoestNotOwnTask_ReturnForbidden() {
+    	given()
+			.spec(specWithoutPermission)
+			.pathParam("id", task.getId())
+			.when()
+				.get("{id}")
+			.then()
+				.statusCode(403)
+			.extract()
+				.body()
+					.asString();
+    }
+    
+    @Test
+    @Order(5)
+    public void findById_InvalidId_ThrowsResourceNotFoundException() {
+    	Long invalidId = Long.valueOf(-1);
+    	
+    	var response = given()
+    			.spec(specification)
+    			.pathParam("id", invalidId)
+    			.when()
+    				.get("{id}")
+    			.then()
+    				.statusCode(404)
+    			.extract()
+    				.body()
+    					.asString();
+    	
+    	assertTrue(response.contains("Could not find any records for this id."));
+    }
+    
+    @Test
+    @Order(6)
     public void update_ValidTaskDto_ReturnsUpdatedTaskDto() throws JsonMappingException, JsonProcessingException {
     	MockDtoUtil.updateTaskAttributes(task);
     	
@@ -216,7 +281,34 @@ public class TaskController {
     }
     
     @Test
-    @Order(5)
+    @Order(7)
+    public void update_UserDoestNotOwnTask_ReturnForbidden() {
+    	given()
+		.spec(specWithoutPermission)
+		.body(task)
+		.when()
+			.put()
+		.then()
+			.statusCode(403)
+		.extract()
+			.body()
+				.asString();
+    }
+    
+    @Test
+    @Order(8)
+    public void delete_UserDoestNotOwnTask_ReturnForbidden() {
+    	given()
+		.spec(specWithoutPermission)
+		.pathParam("id", task.getId())
+		.when()
+			.delete("{id}")
+		.then()
+			.statusCode(403);    	
+    }
+    
+    @Test
+    @Order(9)
     public void delete_ValidId_ReturnsNoContent() {
     	given()
     		.spec(specification)
@@ -225,5 +317,22 @@ public class TaskController {
     			.delete("{id}")
     		.then()
     			.statusCode(204);    	
+    }
+    
+    @Test
+    @Order(10)
+    public void delete_InvalidId_ThrowsResourceNotFoundException() {
+    	String response = given()
+				.spec(specification)
+				.pathParam("id", task.getId())
+				.when()
+					.delete("{id}")
+				.then()
+					.statusCode(404)
+				.extract()
+					.body()
+						.asString();
+    	
+    	assertTrue(response.contains("Could not find any records for this id."));
     }
 }
