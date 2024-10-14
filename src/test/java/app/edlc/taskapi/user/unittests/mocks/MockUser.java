@@ -27,9 +27,9 @@ public class MockUser {
 		entity.setName("Name Test" + number);
 		entity.setUsername("Username Test" + number);
 		entity.setPassword("Password Test" + number);
-		entity.setAccount_non_expired(true);
-		entity.setAccount_non_locked(true);
-		entity.setCredentials_non_expired(true);
+		entity.setAccountNonExpired(true);
+		entity.setAccountNonLocked(true);
+		entity.setCredentialsNonExpired(true);
 		entity.setEnabled(true);
 		entity.setPermissions(new ArrayList<>());
 		

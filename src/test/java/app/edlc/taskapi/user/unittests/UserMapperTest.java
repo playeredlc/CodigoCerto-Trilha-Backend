@@ -41,8 +41,8 @@ public class UserMapperTest {
 			() -> assertEquals("Name Test0", entity.getName()),
 			() -> assertEquals("Username Test0", entity.getUsername()),
 			() -> assertEquals("Password Test0", entity.getPassword()),
-			() -> assertTrue(entity.getAccount_non_expired()),
-			() -> assertTrue(entity.getAccount_non_locked()),
+			() -> assertTrue(entity.getAccountNonExpired()),
+			() -> assertTrue(entity.getAccountNonLocked()),
 			() -> assertTrue(entity.getCredentials_non_expired()),
 			() -> assertTrue(entity.getEnabled())
 	     );	

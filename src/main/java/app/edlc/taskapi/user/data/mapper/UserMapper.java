@@ -22,9 +22,9 @@ public class UserMapper {
 		User entity = modelMapper.map(dto, User.class);		
 		if (entity.getPermissions() == null)
 			entity.setPermissions(new ArrayList<>());
-		entity.setAccount_non_expired(true);
-		entity.setAccount_non_locked(true);
-		entity.setCredentials_non_expired(true);
+		entity.setAccountNonExpired(true);
+		entity.setAccountNonLocked(true);
+		entity.setCredentialsNonExpired(true);
 		entity.setEnabled(true);
 		return entity;
 	}

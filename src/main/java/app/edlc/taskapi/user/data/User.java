@@ -39,13 +39,13 @@ public class User implements UserDetails, Serializable {
 	@Column(name = "password", nullable = false)
 	private String password;
 	
-	@Column
-	private Boolean account_non_expired;
-	@Column
-	private Boolean account_non_locked;
-	@Column
-	private Boolean credentials_non_expired;
-	@Column
+	@Column(name = "account_non_expired")
+	private Boolean accountNonExpired;
+	@Column(name = "account_non_locked")
+	private Boolean accountNonLocked;
+	@Column(name = "credentials_non_expired")
+	private Boolean credentialsNonExpired;
+	@Column(name = "enabled")
 	private Boolean enabled;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -98,28 +98,28 @@ public class User implements UserDetails, Serializable {
 		this.name = name;
 	}
 
-	public Boolean getAccount_non_expired() {
-		return account_non_expired;
+	public Boolean getAccountNonExpired() {
+		return accountNonExpired;
 	}
 
-	public void setAccount_non_expired(Boolean account_non_expired) {
-		this.account_non_expired = account_non_expired;
+	public void setAccountNonExpired(Boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
 	}
 
-	public Boolean getAccount_non_locked() {
-		return account_non_locked;
+	public Boolean getAccountNonLocked() {
+		return accountNonLocked;
 	}
 
-	public void setAccount_non_locked(Boolean account_non_locked) {
-		this.account_non_locked = account_non_locked;
+	public void setAccountNonLocked(Boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
 	}
 
 	public Boolean getCredentials_non_expired() {
-		return credentials_non_expired;
+		return credentialsNonExpired;
 	}
 
-	public void setCredentials_non_expired(Boolean credentials_non_expired) {
-		this.credentials_non_expired = credentials_non_expired;
+	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
+		this.credentialsNonExpired = credentialsNonExpired;
 	}
 
 	public Boolean getEnabled() {
@@ -148,7 +148,7 @@ public class User implements UserDetails, Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(account_non_expired, account_non_locked, credentials_non_expired, enabled, id, name,
+		return Objects.hash(accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, id, name,
 				password, permissions, username);
 	}
 
@@ -161,9 +161,9 @@ public class User implements UserDetails, Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(account_non_expired, other.account_non_expired)
-				&& Objects.equals(account_non_locked, other.account_non_locked)
-				&& Objects.equals(credentials_non_expired, other.credentials_non_expired)
+		return Objects.equals(accountNonExpired, other.accountNonExpired)
+				&& Objects.equals(accountNonLocked, other.accountNonLocked)
+				&& Objects.equals(credentialsNonExpired, other.credentialsNonExpired)
 				&& Objects.equals(enabled, other.enabled) && Objects.equals(id, other.id)
 				&& Objects.equals(name, other.name) && Objects.equals(password, other.password)
 				&& Objects.equals(permissions, other.permissions) && Objects.equals(username, other.username);
