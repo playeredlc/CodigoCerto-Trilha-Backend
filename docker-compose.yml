@@ -1,0 +1,21 @@
+services:
+  taskapi:
+    image: edlcorrea/taskapi
+    restart: always
+    build: ./
+    working_dir: /app
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING.DATASOURCE.URL: jdbc:sqlite:/data/task-api-codigo-certo.db?foreign_keys=ON
+      SPRING.DATASOURCE.USERNAME: ${DB_USER}
+      SPRING.DATASOURCE.PASSWORD: ${DB_PASS}
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - 80:8080
+    networks:
+      - web-taskapi-network   
+    volumes:
+      - ./src/main/resources/db:/data
+networks:
+  web-taskapi-network:
+    driver: bridge
