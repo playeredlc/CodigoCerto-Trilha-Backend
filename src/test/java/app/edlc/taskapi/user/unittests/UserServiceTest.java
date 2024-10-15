@@ -81,7 +81,7 @@ public class UserServiceTest {
     public void delete_ShouldDeleteUser_WhenUserExists() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
 
-        userService.delete(1L);
+        userService.delete(1L, userEntity.getUsername());
 
         verify(userRepository).delete(userEntity);
     }
@@ -90,6 +90,6 @@ public class UserServiceTest {
     public void delete_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> userService.delete(1L));
+        assertThrows(UserNotFoundException.class, () -> userService.delete(1L, userEntity.getUsername()));
     }
 }
