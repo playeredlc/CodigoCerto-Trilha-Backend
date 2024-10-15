@@ -88,7 +88,7 @@ public class TaskController {
 	}
 	
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "EDITAR TAREFA", description = "Edita uma tarefa", tags = "Tasks",
+	@Operation(summary = "EDITAR TAREFA", description = "Edita uma tarefa existente. <br><b>OBS: Inserir o campo \"id\" ao Request</b>", tags = "Tasks",
 		responses = {
 				@ApiResponse(description = "Success", responseCode = "200", content = @Content(schema = @Schema(implementation = TaskDto.class))),
 				@ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),

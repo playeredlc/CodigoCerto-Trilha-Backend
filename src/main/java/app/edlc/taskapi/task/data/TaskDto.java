@@ -4,17 +4,22 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
+
 @JsonPropertyOrder({ "id", "title", "description", "priority", "sdtatus", "deadline" })
 public class TaskDto extends RepresentationModel<TaskDto> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	@Schema(accessMode = AccessMode.READ_ONLY)
 	@JsonProperty(value = "id")
 	private Long key;
 	private String title;
@@ -27,9 +32,16 @@ public class TaskDto extends RepresentationModel<TaskDto> implements Serializabl
 	public TaskDto() {}
 	
 	// Getters, Setters, Equals and HashCode
+	
 
 	public Long getKey() {
 		return key;
+	}
+	
+	@Schema(accessMode = AccessMode.READ_ONLY)
+	@Override
+	public Links getLinks() {
+		return super.getLinks();
 	}
 
 	public void setKey(Long key) {

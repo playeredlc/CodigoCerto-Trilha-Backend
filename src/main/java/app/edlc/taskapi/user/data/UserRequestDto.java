@@ -3,10 +3,14 @@ package app.edlc.taskapi.user.data;
 import java.io.Serializable;
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
+
 public class UserRequestDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	@Schema(accessMode = AccessMode.READ_ONLY)
 	private Long id;
 	private String name;
 	private String username;
