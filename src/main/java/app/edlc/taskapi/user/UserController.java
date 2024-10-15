@@ -12,9 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.edlc.taskapi.user.data.UserRequestDto;
 import app.edlc.taskapi.user.data.UserResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "Usuário", description = "Endpoint para a criação de usuário")
 public class UserController {
 
 	@Autowired
@@ -23,11 +29,26 @@ public class UserController {
 	@PostMapping(
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "CRIAR USUÁRIO", description = "Registra um novo usuário", tags = "Usuário",
+		responses = {
+				@ApiResponse(description = "Success", responseCode = "200", content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
+				@ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+				@ApiResponse(description = "Conflict", responseCode = "409", content = @Content),
+				@ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+		})
 	public UserResponseDto create(@RequestBody UserRequestDto userDto) {
 		return service.create(userDto);
 	}
 	
 	@DeleteMapping(value = "/{id}")
+	@Operation(summary = "DELETAR USUÁRIO", description = "Deleta um usuário utilizando o id", tags = "Usuário",
+		responses = {
+				@ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+				@ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+				@ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
+				@ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+				@ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+		})
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();

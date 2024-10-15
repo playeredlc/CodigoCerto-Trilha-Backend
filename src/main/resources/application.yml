@@ -17,3 +17,10 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
+springdoc:
+  paths-to-match:
+  - "/api/**/v1/**"
+  - "/user/**"
+  - "/auth/**"
+  swagger-ui:
+    use-root-path: true

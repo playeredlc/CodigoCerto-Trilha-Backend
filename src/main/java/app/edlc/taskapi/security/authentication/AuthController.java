@@ -12,15 +12,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.edlc.taskapi.security.data.AccountCredentialsDto;
 import app.edlc.taskapi.security.data.TokenDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticação", description = "Endpoint para a Autenticação de usuário")
 public class AuthController {
 	
 	@Autowired
 	AuthService authService;
 	
 	@PostMapping(value = "/login")
+	@Operation(summary = "FAZER LOGIN", description = "Faz login do usuário e gera um JWT utilizado para acessar recursos protegidos", tags = "Autenticação",
+		responses = {
+				@ApiResponse(description = "Success", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenDto.class))),
+				@ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+				@ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+				@ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+		})
 	public ResponseEntity<?> login(@RequestBody AccountCredentialsDto credentials) {		
 		if (ValidationUtil.isCredentialsNullOrBlank(credentials))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request. Missing username or password.");
@@ -34,6 +47,13 @@ public class AuthController {
 	}
 	
 	@PostMapping(value = "/refresh/{username}")
+	@Operation(summary = "REFRESH TOKEN", description = "Gera um novo JWT utilizando o RefreshToken, sem a necessidade de realizar o login novamente.", tags = "Autenticação",
+		responses = {
+				@ApiResponse(description = "Success", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenDto.class))),
+				@ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+				@ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+				@ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+		})
 	public ResponseEntity<?> refreshToken(
 			@PathVariable String username,
 			@RequestHeader(name = "Authorization") String refreshToken) {
