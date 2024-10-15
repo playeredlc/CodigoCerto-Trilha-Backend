@@ -40,7 +40,7 @@ import io.restassured.specification.RequestSpecification;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
-public class TaskController {
+public class TaskControllerTest {
 	
 	private static ObjectMapper objectMapper;
 	private static RequestSpecification specification;
