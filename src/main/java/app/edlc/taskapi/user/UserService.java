@@ -3,6 +3,8 @@ package app.edlc.taskapi.user;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -60,12 +62,17 @@ public class UserService implements UserDetailsService {
 		return responseDto;
 	}
 	
-	public void delete(Long id) {		
+	public ResponseEntity<?> delete(Long id, String username) {		
 		logger.info("Deleting user");
 		
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException());
 		
+		if (!user.getUsername().equals(username))
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		
 		userRepository.delete(user);
+		
+		return ResponseEntity.noContent().build();
 	}	
 }
