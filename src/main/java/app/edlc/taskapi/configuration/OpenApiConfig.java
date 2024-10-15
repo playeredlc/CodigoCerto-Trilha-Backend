@@ -19,11 +19,14 @@ public class OpenApiConfig {
 	
 	@Bean
 	OpenAPI customOpenAPI() {
+		
 		return new OpenAPI()
 				.info(new Info()
 					.title("TASK API - Código Certo-Trilha Backend")
-					.description("API para gerenciamento de Tarefas desenvolvida para o desafio da trilha de Backend da Código Certo.")
-					.version("v1")					
+					.description("API para gerenciamento de Tarefas desenvolvida para o desafio da trilha de Backend da Código Certo."
+							+ "<br><br> Eduardo Corrêa"
+							+ "<br> eduardodlcorrea@gmail.com")
+					.version("v1")
 				);
 	}
 }
