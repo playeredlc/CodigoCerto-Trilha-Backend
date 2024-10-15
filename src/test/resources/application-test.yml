@@ -4,7 +4,7 @@ cors:
   originPatterns: http://localhost:8888
 spring:
   datasource:
-    url: jdbc:sqlite:src/test/resources/test-db.db
+    url: jdbc:sqlite:src/test/resources/test-db.db?foreign_keys=ON;
     driver-class-name: org.sqlite.JDBC
     username: db_user_test
     password: db_password_test
