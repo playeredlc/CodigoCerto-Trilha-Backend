@@ -8,7 +8,7 @@ security:
       refresh_factor: 3
 spring:
   datasource:
-    url: jdbc:sqlite:src/main/resources/db/task-api-codigo-certo.db?foreign_keys=ON;
+    url: ${DB_URL}
     driver-class-name: org.sqlite.JDBC
     username: ${DB_USER}
     password: ${DB_PASS}
